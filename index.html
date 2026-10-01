@@ -142,13 +142,33 @@ function digAt(x, y){
     if (cell.isMine)
     {
         // TODO
+        cell.isRevealed = true;
         cell.element.setAttribute('class', 'mine');
         return;
     }
 
     if (cell.isRevealed){
         // For cells that are already revealed
-        
+        // if the supposed mines have been flagged
+        // by the user, dig out the supposed empty cells
+        // A little shortcut if you say so
+
+        // Check the surrounding mines and count all the flags
+        let flags = 0;
+        let unrevealedCells = [];
+        iterateOverSurroundingCells(x, y, (surroundingCell, surroundingCellX, surroundingCellY) => {
+            if (surroundingCell.isFlagged || (surroundingCell.isMine && surroundingCell.isRevealed))
+                flags++;
+            else if (!surroundingCell.isRevealed)
+                unrevealedCells.push([surroundingCellX, surroundingCellY]);
+        });
+
+        // If the flag count corresponds to the number of
+        // surrounding mines, dig all the unrevealed cells
+        if (flags == cell.surroundingMines)
+            unrevealedCells.forEach(cell => {
+                digAt(cell[0], cell[1])
+            });
     } 
     else revealCell(cell);
 

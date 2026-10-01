@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main id="map"></main>
+    <div id="container">
+        <main id="map"></main>
+        <button id="restart">Restart</button>
+    </div>
 
-    <button id="restart">Restart</button>
+    <video id="jumpscare" src="fnaf-jumpscare.mp4" autoplay hidden></video>
 
     <script>
 
@@ -23,6 +26,7 @@ let mapWidth = 0;
 let mapHeight = 0;
 let totalMines = 0;
 let areMinesPlaced = false;
+let hasDefeated = false;
 
 class Cell{
     isMine = false;
@@ -59,6 +63,7 @@ function populateMap(width = 20, height = 20, mines = 100){
     mapHeight = height;
     totalMines = mines;
     areMinesPlaced = false;
+    hasDefeated = false;
 
     function placeCell(x, y){
         const cell = document.createElement('button');
@@ -141,9 +146,10 @@ function digAt(x, y){
 
     if (cell.isMine)
     {
-        // TODO
         cell.isRevealed = true;
         cell.element.setAttribute('class', 'mine');
+
+        defeat();
         return;
     }
 
@@ -225,6 +231,26 @@ function toggleFlagCell(x, y){
     if (cell.isFlagged)
         cell.element.classList.add('flagged');
 }
+
+const jumpscare = document.getElementById('jumpscare');
+function defeat(){
+    if (hasDefeated)
+        return;
+    hasDefeated = true;
+
+    // Display a FNAF jumpscare, cause why not?
+    jumpscare.removeAttribute('hidden');
+    jumpscare.currentTime = 0;
+    jumpscare.play();
+
+    setTimeout(() => {
+        jumpscare.pause();
+        jumpscare.hidden = true;
+    }, jumpscare.duration * 1000);
+}
+
+
+
 
 function iterateOverSurroundingCells(x, y, callback){
     for (let offsetX = -1; offsetX < 2; offsetX++)

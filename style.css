@@ -1,10 +1,13 @@
 body{
+    user-select: none;
+    margin: 0;
+}
+
+#container{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
-    user-select: none;
 }
 
 #map{
@@ -56,3 +59,11 @@ button#restart{
 
 button#restart:hover{ background-color: #dcdddf; }
 button#restart:active{ background-color: #b7b9bb; }
+
+#jumpscare{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}

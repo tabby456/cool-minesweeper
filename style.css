@@ -61,7 +61,7 @@ button#restart:hover{ background-color: #dcdddf; }
 button#restart:active{ background-color: #b7b9bb; }
 
 #jumpscare{
-    position: absolute;
+    position: fixed;
     width: 100%;
     height: 100%;
 

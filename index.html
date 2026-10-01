@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main id="map"></main>
+
+    <button id="restart">Restart</button>
+
+    <script>
+
+
+
+const DEBUG = false;
+
+const mapElement = document.getElementById('map');
+let map = {};
+let mapWidth = 0;
+let mapHeight = 0;
+let totalMines = 0;
+let areMinesPlaced = false;
+
+class Cell{
+    isMine = false;
+    isRevealed = false;
+    isFlagged = false;
+    
+    constructor(element){
+        this.element = element;
+    }
+}
+
+function clearMap(){
+    mapElement.replaceChildren();
+    map = {};
+}
+
+function populateMap(width = 20, height = 20, mines = 100){
+    clearMap();
+
+    // Premature checks
+    if (width < 2)
+        width = 2;
+    if (height < 2)
+        height = 2;
+    if (mines > width * height - 9)
+        mines = width * height - 9;
+
+    // Populate the map
+    for (let x = 1; x <= width; x++)
+        for (let y = 1; y <= height; y++)
+            placeCell(x, y);
+
+    mapWidth = width;
+    mapHeight = height;
+    totalMines = mines;
+    areMinesPlaced = false;
+
+    function placeCell(x, y){
+        const cell = document.createElement('button');
+        cell.style.gridRow = y;
+        cell.style.gridColumn = x;
+        cell.onclick = () => digAt(x, y);
+        cell.oncontextmenu = e => {e.preventDefault(); toggleFlagCell(x, y);}
+        mapElement.appendChild(cell);
+
+        map[[x, y]] = new Cell(cell);
+    }
+}
+
+function generateMines(safeX, safeY){
+    if (areMinesPlaced)
+        return;
+
+    // Place mines
+    for (let i = 0; i < totalMines; i++){
+        if (!placeMine(
+            Math.floor(Math.random() * mapWidth) + 1, 
+            Math.floor(Math.random() * mapHeight) + 1))
+            i--;
+    }
+
+    // Calculate all the surrounding mines around a cell
+    for (let x = 1; x <= mapWidth; x++)
+        for (let y = 1; y <= mapHeight; y++)
+        {
+            const cell = map[[x, y]];
+            if (cell.isMine)
+                continue;
+
+            // TODO: optimise?
+            let mines = 0;
+            iterateOverSurroundingCells(x, y, (surroundingCell) => {
+                if (surroundingCell.isMine)
+                        mines++;
+            });
+            
+            cell.surroundingMines = mines;
+            if (DEBUG && mines > 0)
+                cell.element.innerText = mines;
+        }
+
+    areMinesPlaced = true;
+
+    function placeMine(x, y){
+        if (x >= safeX - 1 && x <= safeX + 1 && y >= safeY - 1 && y <= safeY + 1)
+            return false;
+
+        const cell = map[[x, y]];
+        if (cell.isMine)
+            return false;
+
+        cell.isMine = true;
+        if (DEBUG) cell.element.setAttribute('class', 'mine');
+        return true;
+    }
+}
+
+function digAt(x, y){
+    // Premature checks
+    if (mapWidth == 0 || mapHeight == 0)
+        return;
+    if (x < 1 || x > mapWidth
+        || y < 1 || y > mapHeight)
+        return;
+
+    // Only generate mines after a user has picked out a spot
+    // that way we can guarantee that they get a fair bit of
+    // land on start
+    if (!areMinesPlaced)
+        generateMines(x, y);
+    
+    // Look up the cell
+    const cell = map[[x, y]];
+    if (cell.isFlagged)
+        return;
+
+    if (cell.isMine)
+    {
+        // TODO
+        cell.element.setAttribute('class', 'mine');
+        return;
+    }
+
+    if (cell.isRevealed){
+        // For cells that are already revealed
+        
+    } 
+    else revealCell(cell);
+
+    // If empty area
+    if (cell.surroundingMines == 0 && !cell.isMine)
+        floodRevealCells(x, y);
+
+
+
+    function floodRevealCells(x, y){
+        iterateOverSurroundingCells(x, y, (surroundingCell, surroundingCellX, surroundingCellY) => {
+            if (surroundingCell.isRevealed)
+                return;
+
+            revealCell(surroundingCell);
+            if (surroundingCell.surroundingMines == 0)
+                floodRevealCells(surroundingCellX, surroundingCellY);
+        });
+    }
+
+    function revealCell(cell){
+        if (cell.isRevealed)
+            return;
+        cell.isRevealed = true;
+        if (cell.isFlagged)
+            toggleFlagCell(x, y);
+
+        cell.element.setAttribute('class', 'revealed');
+
+        if (cell.surroundingMines > 0){
+            cell.element.innerText = cell.surroundingMines;
+            cell.element.setAttribute('value', cell.surroundingMines);
+        }
+    }
+}
+
+function toggleFlagCell(x, y){
+    // Premature checks
+    if (mapWidth == 0 || mapHeight == 0)
+        return;
+    if (x < 1 || x > mapWidth
+        || y < 1 || y > mapHeight)
+        return;
+    
+    // Look up the cell and set its flagged status
+    const cell = map[[x, y]];
+    if (cell.isRevealed)
+        return;
+    cell.isFlagged = !cell.isFlagged;
+
+    // Set the graphics
+    if (cell.element.classList.contains('flagged'))
+        cell.element.classList.remove('flagged');
+    if (cell.isFlagged)
+        cell.element.classList.add('flagged');
+}
+
+function iterateOverSurroundingCells(x, y, callback){
+    for (let offsetX = -1; offsetX < 2; offsetX++)
+        for (let offsetY = -1; offsetY < 2; offsetY++)
+        {
+            if (offsetX == 0 && offsetY == 0)
+                continue;
+
+            const surroundingCellX = x + offsetX;
+            const surroundingCellY = y + offsetY;
+            if (surroundingCellX < 1 || surroundingCellX > mapWidth
+                || surroundingCellY < 1 || surroundingCellY > mapWidth)
+                continue;
+
+            const surroundingCell = map[[surroundingCellX, surroundingCellY]];
+            callback(surroundingCell, surroundingCellX, surroundingCellY);
+        }
+}
+
+
+// Restart
+const restartButton = document.getElementById('restart');
+restartButton.addEventListener('click', () => {
+    populateMap();
+})
+
+
+    </script>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+body{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    user-select: none;
+}
+
+#map{
+    display: grid;
+}
+
+#map>button{
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    border: 1px solid white;
+    background-color: #d1d2d4;
+
+    font-size: 1.05em;
+    font-weight: bold;
+}
+#map>button:hover{ background-color: #c4c5c7; }
+#map>button:active{ background-color: #b1b2b5; }
+
+#map>button.revealed{ background-color: #edeef0; }
+#map>button.flagged{ background-color: #ef9f99; }
+
+#map>button.mine{
+    background-color: blueviolet;
+}
+
+#map>button[value='1']{ color: #4e71e2; }
+#map>button[value='2']{ color: #189e45; }
+#map>button[value='3']{ color: #de6742; }
+#map>button[value='4']{ color: #7a41d4; }
+#map>button[value='5']{ color: #e29a4e; }
+#map>button[value='6']{ color: #4eb8e2; }
+
+button#restart{
+    margin: auto;
+    margin-top: 20px;
+
+    padding: 8px 15px;
+
+    border: 0;
+    border-radius: 5px;
+    background-color: #ebecee;
+
+    text-align: center;
+    font-size: medium;
+}
+
+button#restart:hover{ background-color: #dcdddf; }
+button#restart:active{ background-color: #b7b9bb; }

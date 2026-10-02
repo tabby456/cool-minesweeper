@@ -234,6 +234,7 @@ function toggleFlagCell(x, y){
 }
 
 const jumpscare = document.getElementById('jumpscare');
+const jumpscarePlaybackRate = 1.6;
 function defeat(){
     if (hasDefeated)
         return;
@@ -242,12 +243,13 @@ function defeat(){
     // Display a FNAF jumpscare, cause why not?
     jumpscare.removeAttribute('hidden');
     jumpscare.currentTime = 0;
+    jumpscare.playbackRate = jumpscarePlaybackRate;
     jumpscare.play();
 
     setTimeout(() => {
         jumpscare.pause();
         jumpscare.hidden = true;
-    }, jumpscare.duration * 1000);
+    }, (jumpscare.duration * 1000) / jumpscarePlaybackRate);
 }
 
 

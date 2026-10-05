@@ -265,7 +265,7 @@ function iterateOverSurroundingCells(x, y, callback){
             const surroundingCellX = x + offsetX;
             const surroundingCellY = y + offsetY;
             if (surroundingCellX < 1 || surroundingCellX > mapWidth
-                || surroundingCellY < 1 || surroundingCellY > mapWidth)
+                || surroundingCellY < 1 || surroundingCellY > mapHeight)
                 continue;
 
             const surroundingCell = map[[surroundingCellX, surroundingCellY]];

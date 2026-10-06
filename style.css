@@ -1,13 +1,63 @@
 body{
     user-select: none;
     margin: 0;
+
+    font-family: "Nunito", sans-serif;
+    font-optical-sizing: auto;
+    
+    /*background-color: #f8f8fa;*/
 }
+
+body.confetti{
+    background-image: url(confetti-sticker.gif);
+    background-repeat: repeat-x;
+    background-size: 57vh;
+}
+
+#display-bar{
+    border-radius: 10px 10px 0 0;
+    background-color: rgba(255, 255, 255, 50);
+    padding: 25px;
+
+    width: auto;
+
+    position: fixed;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+}
+
+#display-bar-text{
+    font-weight: 700;
+    font-size: 1.8em;
+
+    margin: 0;
+    margin-right: 15px;
+}
+
+button#restart{
+    padding: 8px 15px;
+
+    border: 0;
+    border-radius: 5px;
+    background-color: #ebecee;
+
+    text-align: center;
+    font-size: medium;
+}
+
+button#restart:hover{ background-color: #dcdddf; }
+button#restart:active{ background-color: #b7b9bb; }
 
 #container{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 50);
+    padding: 25px;
 }
 
 #map{
@@ -44,23 +94,8 @@ body{
 #map>button[value='4']{ color: #7a41d4; }
 #map>button[value='5']{ color: #e29a4e; }
 #map>button[value='6']{ color: #4eb8e2; }
-
-button#restart{
-    margin: auto;
-    margin-top: 20px;
-
-    padding: 8px 15px;
-
-    border: 0;
-    border-radius: 5px;
-    background-color: #ebecee;
-
-    text-align: center;
-    font-size: medium;
-}
-
-button#restart:hover{ background-color: #dcdddf; }
-button#restart:active{ background-color: #b7b9bb; }
+#map>button[value='7']{ color: #26292b; }
+#map>button[value='8']{ color: #5f6265; }
 
 #jumpscare{
     position: fixed;
@@ -69,3 +104,69 @@ button#restart:active{ background-color: #b7b9bb; }
 
     object-fit: cover;
 }
+
+
+
+#panel-toggle{
+    position: fixed;
+    right: 0%;
+    bottom: 0%;
+
+    width: 50px;
+    height: 50px;
+
+    font-size: 25px;
+
+    background: none;
+    border: none;
+
+    cursor: pointer;
+}
+
+#panel{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+.dim-screen{
+    opacity: 0.5;
+    background-color: black;
+
+    width: 100%;
+    height: 100%;
+}
+
+#panel-main{
+    background-color: #fff;
+
+    position: fixed;
+    right: 0;
+    top: 0;
+
+    width: 275px;
+    height: 100%;
+
+    padding: 25px;
+}
+
+#panel-main label{
+    font-size: 1.8em;
+}
+
+#panel-main button{
+    padding: 8px 15px;
+
+    width: 100%;
+
+    border: 0;
+    background-color: #ebecee;
+
+    text-align: center;
+    font-size: medium;
+}
+
+#panel-main button:hover{ background-color: #dcdddf; }
+#panel-main button:active{ background-color: #b7b9bb; }
+
+#panel-main button.toggled{ background-color: #8dc0f4; }

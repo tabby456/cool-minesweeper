@@ -4,12 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="display-bar">
+        <span id="display-bar-text">⏰<span id="timer">0</span></span>
+        <span id="display-bar-text">🚩<span id="flags">0</span></span>
+        <button id="restart">Restart</button>
+    </div>
     <div id="container">
         <main id="map"></main>
-        <button id="restart">Restart</button>
+    </div>
+
+    <button id="panel-toggle">⚙️</button>
+    <div id="panel">
+        <div class="dim-screen"></div>
+        <div id="panel-main">
+            <label>Difficulty</label><br>
+            <div id="difficulty-list"></div>
+        </div>
     </div>
 
     <video id="jumpscare" src="fnaf-jumpscare.mp4" autoplay hidden></video>
@@ -26,7 +44,12 @@ let mapWidth = 0;
 let mapHeight = 0;
 let totalMines = 0;
 let areMinesPlaced = false;
-let hasDefeated = false;
+
+let hasLost = false;
+let hasWon = false;
+let cellsRevealed = 0;
+let cellsFlagged = 0;
+let timer = 0;
 
 class Cell{
     isMine = false;
@@ -63,14 +86,23 @@ function populateMap(width = 24, height = 24, mines = 99){
     mapHeight = height;
     totalMines = mines;
     areMinesPlaced = false;
-    hasDefeated = false;
+
+    hasLost = false;
+    hasWon = false;
+    cellsRevealed = 0;
+    cellsFlagged = 0;
+    timer = 0;
+    stopTimer();
+    updateFlagNumber();
+
+    timerText.innerText = timer;
 
     function placeCell(x, y){
         const cell = document.createElement('button');
         cell.style.gridRow = y;
         cell.style.gridColumn = x;
         cell.onclick = () => digAt(x, y);
-        cell.oncontextmenu = e => {e.preventDefault(); toggleFlagCell(x, y);}
+        cell.oncontextmenu = e => {e.preventDefault(); toggleFlagCellAt(x, y);}
         mapElement.appendChild(cell);
 
         map[[x, y]] = new Cell(cell);
@@ -110,6 +142,7 @@ function generateMines(safeX, safeY){
         }
 
     areMinesPlaced = true;
+    startTimer();
 
     function placeMine(x, y){
         if (x >= safeX - 1 && x <= safeX + 1 && y >= safeY - 1 && y <= safeY + 1)
@@ -148,6 +181,8 @@ function digAt(x, y){
     {
         cell.isRevealed = true;
         cell.element.setAttribute('class', 'mine');
+        cellsFlagged++;
+        updateFlagNumber();
 
         defeat();
         return;
@@ -199,9 +234,10 @@ function digAt(x, y){
     function revealCell(cell){
         if (cell.isRevealed)
             return;
-        cell.isRevealed = true;
+
         if (cell.isFlagged)
-            toggleFlagCell(x, y);
+            toggleFlagCell(cell);
+        cell.isRevealed = true;
 
         cell.element.setAttribute('class', 'revealed');
 
@@ -209,10 +245,14 @@ function digAt(x, y){
             cell.element.innerText = cell.surroundingMines;
             cell.element.setAttribute('value', cell.surroundingMines);
         }
+
+        cellsRevealed++;
+        if (cellsRevealed == mapWidth * mapHeight - totalMines)
+            win();
     }
 }
 
-function toggleFlagCell(x, y){
+function toggleFlagCellAt(x, y){
     // Premature checks
     if (mapWidth == 0 || mapHeight == 0)
         return;
@@ -220,11 +260,18 @@ function toggleFlagCell(x, y){
         || y < 1 || y > mapHeight)
         return;
     
-    // Look up the cell and set its flagged status
+    // Look up the cell
     const cell = map[[x, y]];
+    toggleFlagCell(cell);
+}
+
+function toggleFlagCell(cell){
     if (cell.isRevealed)
         return;
+
     cell.isFlagged = !cell.isFlagged;
+    cellsFlagged += cell.isFlagged ? 1 : -1;
+    updateFlagNumber();
 
     // Set the graphics
     if (cell.element.classList.contains('flagged'))
@@ -233,12 +280,20 @@ function toggleFlagCell(x, y){
         cell.element.classList.add('flagged');
 }
 
+const flagsText = document.getElementById('flags');
+function updateFlagNumber(){
+    flagsText.textContent = totalMines - cellsFlagged;
+}
+
+
+
+
 const jumpscare = document.getElementById('jumpscare');
 const jumpscarePlaybackRate = 1.6;
 function defeat(){
-    if (hasDefeated)
+    if (hasLost || hasWon)
         return;
-    hasDefeated = true;
+    hasLost = true;
 
     // Display a FNAF jumpscare, cause why not?
     jumpscare.removeAttribute('hidden');
@@ -250,6 +305,30 @@ function defeat(){
         jumpscare.pause();
         jumpscare.hidden = true;
     }, (jumpscare.duration * 1000) / jumpscarePlaybackRate);
+}
+
+function win(){
+    if (hasWon || hasLost)
+        return;
+
+    stopTimer();
+    document.querySelector('body').classList.add('confetti');
+}
+
+const timerText = document.getElementById('timer');
+let timerInterval;
+function startTimer(){
+    timer = 0;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timer++;
+        timerText.innerText = timer;
+    }, 1000);
+}
+
+function stopTimer(){
+    clearInterval(timerInterval);
 }
 
 
@@ -279,6 +358,32 @@ const restartButton = document.getElementById('restart');
 restartButton.addEventListener('click', () => {
     populateMap();
 })
+
+populateMap();
+
+
+
+
+// Panel toggle
+const panel = document.getElementById('panel');
+const panelMain = document.getElementById('panel-main');
+const panelToggle = document.getElementById('panel-toggle');
+const panelDimScreen = document.querySelector('#panel>.dim-screen');
+
+panel.setAttribute('hidden', true);
+
+function togglePanel(){
+    if (panel.hasAttribute('hidden'))
+        panel.removeAttribute('hidden');
+    else panel.setAttribute('hidden', true);
+}
+
+panelDimScreen.addEventListener('click', togglePanel);
+panelToggle.addEventListener('click', togglePanel);
+
+
+// Prepare the panel
+const difficultyList = document.getElementById('difficulty-list');
 
 
     </script>

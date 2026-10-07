@@ -2,36 +2,49 @@
 
 :root{
     --background-color: white;
-    --color: black;
+    --color: #0f2b3e;
 
-    --button-color: black;
+
+
+    --button-color: #0f2b3e; 
     --button-text-color: white;
-    --button-hover-color: #1a1a1a;
-    --button-pressed-color: #272727;
+    --button-hover-color: #123349;
+    --button-pressed-color: #091d2b;
     --button-toggled-color: #8dc0f4;
+    
 
-    --cell-size: 33px;
-    --cell-font-size: 1.1em;
 
-    --cell-color: #212224;
-    --cell-hover-color: #414246;
-    --cell-pressed-color: #56575a;
-    --cell-revealed-color: #000000;
-    --cell-flagged-color: #da746d;
+    --cell-size: 30px;
+    --cell-font-size: 1.15em;
+
+    --cell-color: #0f2b3e;
+    --cell-hover-color: #233c4d;
+    --cell-pressed-color: #152c3b;
+
+    --cell-revealed-color: #f3fcfc;
+    --cell-revealed-hover-color: #e3ecec;
+    --cell-revealed-pressed-color: #d2dada;
+
+    --cell-flagged-color: #ef9f99;
+    --cell-flagged-hover-color: #da8c87;
     --cell-mine-color: blueviolet;
 
-    --cell-border: 0 solid #2b2c31;
+
+    --cell-border: 0 solid #243e50;
+    --cell-revealed-border-color: #c0c1c4;
+    --cell-flagged-border-color: #da8c87;
     --cell-border-top-width: 1px;
     --cell-border-left-width: 1px;
 
-    --cell-1: #9aace6;
-    --cell-2: #8edaa7;
-    --cell-3: #e6957d;
-    --cell-4: #b18fe7;
-    --cell-5: #e6b887;
-    --cell-6: #92cfe7;
-    --cell-7: #f8f8f8;
-    --cell-8: #b2b2b3;
+
+    --cell-1: #4e71e2;
+    --cell-2: #189e45;
+    --cell-3: #de6742;
+    --cell-4: #7a41d4;
+    --cell-5: #e29a4e;
+    --cell-6: #4eb8e2;
+    --cell-7: #26292b;
+    --cell-8: #5f6265;
 }
 
 .basic{
@@ -55,6 +68,7 @@
     --cell-mine-color: blueviolet;
 
     --cell-border: 0 solid #c0c1c4;
+    --cell-revealed-border: 0 solid #c0c1c4;
     --cell-border-top-width: 1px;
     --cell-border-left-width: 1px;
 
@@ -68,6 +82,41 @@
     --cell-8: #5f6265;
 }
 
+.black-and-white{
+    --background-color: white;
+    --color: black;
+
+    --button-color: black;
+    --button-text-color: white;
+    --button-hover-color: #1a1a1a;
+    --button-pressed-color: #272727;
+    --button-toggled-color: #8dc0f4;
+
+    --cell-size: 33px;
+    --cell-font-size: 1.1em;
+
+    --cell-color: #212224;
+    --cell-hover-color: #414246;
+    --cell-pressed-color: #56575a;
+    --cell-revealed-color: #000000;
+    --cell-flagged-color: #da746d;
+    --cell-mine-color: blueviolet;
+
+    --cell-border: 0 solid #2b2c31;
+    --cell-revealed-border: 0 solid #2b2c31;
+    --cell-border-top-width: 1px;
+    --cell-border-left-width: 1px;
+
+    --cell-1: #9aace6;
+    --cell-2: #8edaa7;
+    --cell-3: #e6957d;
+    --cell-4: #b18fe7;
+    --cell-5: #e6b887;
+    --cell-6: #92cfe7;
+    --cell-7: #f8f8f8;
+    --cell-8: #b2b2b3;
+}
+
 
 
 
@@ -76,7 +125,7 @@
 
 
 *{
-    font-family: "Jersey 10", sans-serif;
+    font-family: "Sniglet", sans-serif;
 }
 
 body{
@@ -90,7 +139,7 @@ body{
 }
 
 body.confetti{
-    background-image: url(confetti-sticker.gif);
+    background-image: url(img/confetti-sticker.gif);
     background-repeat: repeat-x;
     background-size: 57vh;
 }
@@ -102,29 +151,25 @@ body.confetti{
     position: absolute;
     top: 50%;
     left: 0;
-    transform: translate(-100%, -50%);
+    transform: translate(-110%, -50%);
 }
 
 #display-bar-text{
-    font-weight: 700;
     font-size: 2.5em;
 
     margin: 0;
 }
 
 #display-bar-text img{
-    -webkit-filter: invert(100%);
-    image-rendering: pixelated;
+    /*-webkit-filter: invert(100%);
+    image-rendering: pixelated;*/
 
     height: 1.25em;
     transform: translate(0, 0.25em);
 }
 
-button#restart{
-    padding: 15px 25px;
-
-    position: fixed;
-    bottom: 0;
+#display-bar button{
+    padding: 10px;
     width: 100%;
 
     border: 0;
@@ -133,11 +178,25 @@ button#restart{
 
     text-align: center;
     font-size: 1.5em;
-    font-weight: 600;
 }
 
-button#restart:hover{ background-color: var(--button-hover-color); }
-button#restart:active{ background-color: var(--button-pressed-color); }
+#display-bar button:hover{ background-color: var(--button-hover-color); }
+#display-bar button:active{ background-color: var(--button-pressed-color); }
+
+#display-bar button>img{
+    height: 100%;
+}
+
+#display-bar>.flexbox{
+    position: fixed;
+    bottom: 0;
+    height: 60px;
+    width: 100%;
+}
+
+.flexbox{
+    display: flex;
+}
 
 #container{
     position: absolute;
@@ -162,15 +221,21 @@ button#restart:active{ background-color: var(--button-pressed-color); }
     background-color: var(--cell-color);
 
     font-size: var(--cell-font-size);
-    font-weight: bold;
 }
 #map>button:hover{ background-color: var(--cell-hover-color); }
 #map>button:active{ background-color: var(--cell-pressed-color); }
 
-#map>button.revealed{ background-color: var(--cell-revealed-color); }
-#map>button.flagged{ background-color: var(--cell-flagged-color); }
+#map>button.revealed{
+    background-color: var(--cell-revealed-color); 
+    border-color: var(--cell-revealed-border-color);
+}
+#map>button.revealed:hover{ background-color: var(--cell-revealed-hover-color); }
+#map>button.revealed:active{ background-color: var(--cell-revealed-pressed-color); }
 
-#map>button.mine{ background-color: var(--cell-mine-color); }
+#map>button.flagged{ background-color: var(--cell-flagged-color); border-color: var(--cell-flagged-border-color); }
+#map>button.flagged:hover{ background-color: var(--cell-flagged-hover-color); }
+
+#map>button.mine{ background-color: var(--cell-mine-color); border: 0; }
 
 #map>button[value='1']{ color: var(--cell-1); }
 #map>button[value='2']{ color: var(--cell-2); }
@@ -190,6 +255,10 @@ button#restart:active{ background-color: var(--button-pressed-color); }
 }
 
 
+
+
+
+/* Config menu */
 
 #panel-toggle{
     position: fixed;
@@ -225,11 +294,12 @@ button#restart:active{ background-color: var(--button-pressed-color); }
     background-color: #fff;
 
     position: fixed;
-    right: 0;
-    top: 0;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 
-    width: 275px;
-    height: 100%;
+    width: 500px;
+    height: 300px;
 
     padding: 25px;
 }
@@ -246,11 +316,21 @@ button#restart:active{ background-color: var(--button-pressed-color); }
     border: 0;
     background-color: var(--button-color);
 
-    text-align: center;
     font-size: medium;
 }
 
-#panel-main button:hover{ background-color: var(--button-hover-color); }
-#panel-main button:active{ background-color: var(--button-pressed-color); }
+#panel-main button:hover, select:hover{ background-color: var(--button-hover-color); }
+#panel-main button:active, select:active{ background-color: var(--button-pressed-color); }
 
 #panel-main button.toggled{ background-color: var(--button-toggled-color); }
+
+select{
+    margin-left: 15px;
+    padding: 8px 15px;
+
+    border: 0;
+    background-color: var(--button-color);
+
+    font-size: 1.6em;
+    color: var(--button-text-color);
+}

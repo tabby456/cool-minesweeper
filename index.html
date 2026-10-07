@@ -7,37 +7,48 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="container">
         <div id="display-bar">
-            <div id="display-bar-text"><img src="time.png" alt="time"> <span id="timer">0</span></div>
-            <div id="display-bar-text"><img src="flag.png" alt="flagged"> <span id="flags">0</span></div>
-            <button id="restart">Restart</button>
+            <div id="display-bar-text"><img src="img/time.png" alt="time"> <span id="timer">0</span></div>
+            <div id="display-bar-text"><img src="img/flag.png" alt="flagged"> <span id="flags">0</span></div>
+            <div class="flexbox">
+                <button id="config-toggle"><img src="img/config.png" alt="Config"></button>
+                <button id="restart"><img src="img/restart.png" alt="Restart"></button>
+            </div>
         </div>
 
         <main id="map"></main>
     </div>
 
-    <button id="panel-toggle">⚙️</button>
     <div id="panel">
         <div class="dim-screen"></div>
         <div id="panel-main">
-            <label>Difficulty</label><br>
-            <div id="difficulty-list"></div>
+            <label for="difficulty">Difficulty</label>
+            <select name="difficulty" id="difficulty"></select>
         </div>
     </div>
 
-    <video id="jumpscare" src="fnaf-jumpscare.mp4" autoplay hidden></video>
+    <video id="jumpscare" src="vid/fnaf-jumpscare.mp4" autoplay hidden></video>
 
     <script>
 
 
 
-const DEBUG = false;
+let DEBUG = false;
+
+let chosenDifficulty = 1;
+const difficulties = [
+    ['Easy', 10, 8, 10],
+    ['Medium', 13, 14, 40],
+    ['Hard', 24, 24, 99]
+]
+
+const body = document.querySelector('body');
 
 const mapElement = document.getElementById('map');
 let map = {};
@@ -65,6 +76,11 @@ class Cell{
 function clearMap(){
     mapElement.replaceChildren();
     map = {};
+}
+
+function populateMapFromChosenDifficulty(){
+    const d = difficulties[chosenDifficulty];
+    populateMap(d[1], d[2], d[3]);
 }
 
 function populateMap(width = 24, height = 24, mines = 99){
@@ -98,6 +114,7 @@ function populateMap(width = 24, height = 24, mines = 99){
 
     timerText.innerText = timer;
     document.querySelector('body').classList.remove('confetti');
+    updateMinPageSize();
 
     function placeCell(x, y){
         const cell = document.createElement('button');
@@ -287,6 +304,14 @@ function updateFlagNumber(){
     flagsText.textContent = totalMines - cellsFlagged;
 }
 
+function updateMinPageSize(){
+    const cellSize = parseInt(window.getComputedStyle(document.querySelector('#map>button')).getPropertyValue('--cell-size').replace('px',''));
+    const displayBarWidth = document.getElementById('display-bar').offsetWidth;
+    
+    body.style.minWidth = (cellSize * mapWidth + cellSize * 2 + displayBarWidth) + 'px';
+    body.style.minHeight = (cellSize * mapHeight + cellSize * 2) + 'px';
+}
+
 
 
 
@@ -315,7 +340,7 @@ function win(){
 
     hasWon = true;
     stopTimer();
-    document.querySelector('body').classList.add('confetti');
+    body.classList.add('confetti');
 }
 
 const timerText = document.getElementById('timer');
@@ -356,13 +381,10 @@ function iterateOverSurroundingCells(x, y, callback){
 }
 
 
-// Restart
+// Restart and populate the map
 const restartButton = document.getElementById('restart');
-restartButton.addEventListener('click', () => {
-    populateMap();
-})
-
-populateMap();
+restartButton.addEventListener('click', () => populateMapFromChosenDifficulty());
+populateMapFromChosenDifficulty();
 
 
 
@@ -370,7 +392,7 @@ populateMap();
 // Panel toggle
 const panel = document.getElementById('panel');
 const panelMain = document.getElementById('panel-main');
-const panelToggle = document.getElementById('panel-toggle');
+const panelToggle = document.getElementById('config-toggle');
 const panelDimScreen = document.querySelector('#panel>.dim-screen');
 
 panel.setAttribute('hidden', true);
@@ -386,8 +408,24 @@ panelToggle.addEventListener('click', togglePanel);
 
 
 // Prepare the panel
-const difficultyList = document.getElementById('difficulty-list');
+const difficultyList = document.getElementById('difficulty');
 
+for (let i = 0; i < difficulties.length; i++){
+    let difficulty = difficulties[i];
+
+    let element = document.createElement('option');
+    element.value = i;
+    element.innerText = difficulty[0];
+
+    difficultyList.appendChild(element);
+}
+
+difficultyList.addEventListener('change', (e) => {
+    console.log(parseInt(e.currentTarget.value));
+    chosenDifficulty = parseInt(e.currentTarget.value);
+});
+
+difficultyList.value = chosenDifficulty;
 
     </script>
 </body>

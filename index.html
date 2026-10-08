@@ -33,6 +33,7 @@
         </div>
     </div>
 
+    <div id="confetti-container"></div>
     <video id="jumpscare" src="vid/fnaf-jumpscare.mp4" autoplay hidden></video>
 
     <script>
@@ -340,7 +341,8 @@ function win(){
 
     hasWon = true;
     stopTimer();
-    body.classList.add('confetti');
+
+    playConfetti();
 }
 
 const timerText = document.getElementById('timer');
@@ -423,9 +425,90 @@ for (let i = 0; i < difficulties.length; i++){
 difficultyList.addEventListener('change', (e) => {
     console.log(parseInt(e.currentTarget.value));
     chosenDifficulty = parseInt(e.currentTarget.value);
+    populateMapFromChosenDifficulty();
 });
 
 difficultyList.value = chosenDifficulty;
+
+
+
+// Confetti
+let confettiContainer = document.getElementById('confetti-container');
+
+function playConfetti(){
+    const gravity = 700;
+    const particleAmount = 100;
+
+    let animationStartTimestap = 0;
+    let lastAnimationTimestamp = 0;
+    let animationTime = 0;
+
+    let particles = [];
+
+
+    for (let i = 0; i < particleAmount/2; i++)
+        spawnParticle([0, 0], [randomRange(50, 400), randomRange(150, 600)]);
+    for (let i = 0; i < particleAmount/2; i++)
+        spawnParticle([window.innerWidth, 0], [-randomRange(50, 400), randomRange(150, 600)]);
+
+
+    requestAnimationFrame(update);
+
+
+    function spawnParticle(position, velocity){
+        let element = document.createElement('div');
+        element.style.width = randomRange(9, 20) + 'px';
+        element.style.height = randomRange(9, 20) + 'px';
+        element.style.backgroundColor = `rgb(${randomRange(200, 255)}, ${randomRange(200, 255)}, ${randomRange(200, 255)})`;
+
+        confettiContainer.appendChild(element);
+
+        particles.push({
+            element: element, 
+            position: position, 
+            velocity: velocity,
+            rotation: randomRange(0, 89)
+        });
+    }
+
+    function update(timestamp){
+        if (animationStartTimestap == 0){
+            animationStartTimestap = timestamp;
+            lastAnimationTimestamp = timestamp;
+        }
+        let deltaTime = (timestamp - lastAnimationTimestamp) / 1000;
+
+        animationTime += deltaTime;
+        lastAnimationTimestamp = timestamp;
+
+
+        particles.forEach(particle => updateParticle(particle, deltaTime));
+
+
+        if (animationTime < 5)
+            requestAnimationFrame(update);
+
+        else particles.forEach(particle => {
+            // Finish animation
+            // Clear all particles
+            particles.forEach(particle => confettiContainer.removeChild(particle.element));
+        });
+    }
+
+    function updateParticle(particle, deltaTime){
+        particle.velocity[1] -= gravity * deltaTime;
+        particle.position[0] += particle.velocity[0] * deltaTime;
+        particle.position[1] -= particle.velocity[1] * deltaTime;
+
+        particle.element.style.transform = `translate(${particle.position[0]}px, ${particle.position[1]}px) rotate(${particle.rotation}deg)`;
+    }
+}
+
+
+
+
+
+let randomRange = (from, to) => Math.random() * (to - from) + from;
 
     </script>
 </body>

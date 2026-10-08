@@ -16,15 +16,15 @@
         <div id="display-bar">
             <div id="display-bar-text">
                 <span class="multilayered-icon">
-                    <img id="time-frame-icon" src="img/time_frame.png" alt="time"> 
-                    <img id="time-hand-icon" src="img/time_hand.png"> 
+                    <img id="time-frame-icon" src="img/time_frame.png" alt="time" draggable="false"> 
+                    <img id="time-hand-icon" src="img/time_hand.png" draggable="false"> 
                 </span>
                 <span id="timer">0</span>
             </div>
-            <div id="display-bar-text"><img src="img/flag.png" alt="flagged"> <span id="flags">0</span></div>
+            <div id="display-bar-text"><img src="img/flag.png" alt="flagged" draggable="false"> <span id="flags">0</span></div>
             <div class="flexbox">
-                <button id="config-toggle"><img src="img/config.png" alt="Config"></button>
-                <button id="restart"><img src="img/restart.png" alt="Restart"></button>
+                <button id="config-toggle"><img src="img/config.png" alt="Config" draggable="false"></button>
+                <button id="restart"><img src="img/restart.png" alt="Restart" draggable="false"></button>
             </div>
         </div>
 
@@ -370,7 +370,7 @@ function startTimer(){
 
 function stopTimer(){
     clearInterval(timerInterval);
-    
+
     timerFrameIcon.src = 'img/time_frame_pressed.png'
 }
 

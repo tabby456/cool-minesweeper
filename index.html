@@ -14,7 +14,13 @@
 <body>
     <div id="container">
         <div id="display-bar">
-            <div id="display-bar-text"><img src="img/time.png" alt="time"> <span id="timer">0</span></div>
+            <div id="display-bar-text">
+                <span class="multilayered-icon">
+                    <img id="time-frame-icon" src="img/time_frame.png" alt="time"> 
+                    <img id="time-hand-icon" src="img/time_hand.png"> 
+                </span>
+                <span id="timer">0</span>
+            </div>
             <div id="display-bar-text"><img src="img/flag.png" alt="flagged"> <span id="flags">0</span></div>
             <div class="flexbox">
                 <button id="config-toggle"><img src="img/config.png" alt="Config"></button>
@@ -109,8 +115,7 @@ function populateMap(width = 24, height = 24, mines = 99){
     hasWon = false;
     cellsRevealed = 0;
     cellsFlagged = 0;
-    timer = 0;
-    stopTimer();
+    resetTimer();
     updateFlagNumber();
 
     timerText.innerText = timer;
@@ -346,19 +351,42 @@ function win(){
 }
 
 const timerText = document.getElementById('timer');
+const timerFrameIcon = document.getElementById('time-frame-icon');
+const timerHandIcon = document.getElementById('time-hand-icon');
 let timerInterval;
 function startTimer(){
     timer = 0;
 
+    timerFrameIcon.src = 'img/time_frame.png'
+
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        timer++;
-        timerText.innerText = timer;
-    }, 1000);
+        timer += 0.25;
+        timerText.innerText = Math.floor(timer);
+
+        timerHandIcon.style.rotate = (timer * 30) + 'deg';
+    }, 250);
 }
 
 function stopTimer(){
     clearInterval(timerInterval);
+    
+    timerFrameIcon.src = 'img/time_frame_pressed.png'
+}
+
+function resetTimer(){
+    timer = 0;
+    stopTimer();
+
+    timerFrameIcon.src = 'img/time_frame.png'
+    timerHandIcon.style.rotate = (timer * 30) + 'deg';
+
+    // Disable the transition on the timer's hand so that it instantly goes back into place
+    let transition = timerHandIcon.style.transition;
+    timerHandIcon.style.transition = '0s';
+    setTimeout(() => {
+        timerHandIcon.style.transition = transition;
+    }, 50);
 }
 
 

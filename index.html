@@ -204,6 +204,9 @@ function digAt(x, y){
 
     if (cell.isMine)
     {
+        if (cell.isRevealed)
+            return;
+
         cell.isRevealed = true;
         cell.element.setAttribute('class', 'mine');
         cellsFlagged++;
